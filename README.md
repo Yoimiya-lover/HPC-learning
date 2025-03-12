@@ -4,3 +4,4 @@
 
 
 c++ : OMP 多线程学习笔记
+第一节：OMP接口：https://blog.csdn.net/2303_77085211/article/details/146200858?sharetype=blogdetail&sharerId=146200858&sharerefer=PC&sharesource=2303_77085211&spm=1011.2480.3001.8118

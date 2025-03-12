@@ -27,3 +27,6 @@ omp_get_wtime()
 omp_get_thread_num()
 获得线程id
 
+ omp_set_nested(1)
+ 启动多层嵌套，内外多线程，嵌套并行
+

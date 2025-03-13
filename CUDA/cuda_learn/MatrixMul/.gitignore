@@ -1,0 +1,12 @@
+# 编译输出
+*.o
+*.a
+*.so
+*.exe
+*.out
+*.dll
+
+# 编译目录
+build/
+bin/
+obj/

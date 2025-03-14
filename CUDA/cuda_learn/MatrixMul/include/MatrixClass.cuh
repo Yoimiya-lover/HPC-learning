@@ -134,6 +134,12 @@ namespace MatrixMul
                 CUDA_CHECK(cudaMalloc((void**)&_data,size * sizeof(T)));
             }
 
+
+            void Initiate_C_zero()
+            {
+                Initiate_Device(_data_C_Device,_C_size,0);
+            }
+
             void cudaMem_Host_To_Device()
             {
                 CUDA_CHECK(cudaMemcpy(_data_A_Device, _data_A_Host, sizeof(T) * _A_size, cudaMemcpyHostToDevice));
@@ -151,7 +157,7 @@ namespace MatrixMul
                 this->MatrixcudaDeviceSynchronize();
             }
 
-            void multiply_v2(dim3 grid,dim3 block)
+            void multiply_share_memory(dim3 grid,dim3 block)
             {
                 matrixMulkernel_v2<float><<<grid,block>>>(_data_A_Device,_data_B_Device,_data_C_Device,_M,_K,_N);
                 this->MatrixcudaDeviceSynchronize();
@@ -205,7 +211,6 @@ namespace MatrixMul
                 cudaDeviceReset();
                 std::cout<<"重置完成"<<std::endl;
             }
-            
 
             ~Matrix()
             {

@@ -21,10 +21,17 @@ else()
 endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+find_package(OpenMP REQUIRED)
+if(OpenMP_CXX_FOUND)
+    message(STATUS "OpenMP_CXX_FOUND: ${OpenMP_CXX_FOUND}")
+endif()
+
+
 #添加可执行文件
 add_executable(cudaMatrixMul MatrixMul_test.cu)
 target_include_directories(cudaMatrixMul PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../tool/)
 target_include_directories(cudaMatrixMul PRIVATE ${CUDA_INCLUDE_DIRS})
+target_link_libraries(cudaMatrixMul PRIVATE OpenMP::OpenMP_CXX)
 
 #链接库
 target_link_libraries(cudaMatrixMul PRIVATE ${CUDA_LIBRARIES})

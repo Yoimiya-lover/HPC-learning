@@ -20,6 +20,7 @@ int main(int argc,const char* argv[])
     const int N = atoi(argv[3]);
     if(M <=0 || K <= 0 || N <= 0 ) {
         std::cout << "参数设置错误！！！" << "正确参数为: M > 0; K > 0; N > 0; Thread_num >= 0 !!!" << std::endl;
+        return -1;
     }
     setGPU();
     MatrixMul::Matrix<float> mat(M,K,N);
@@ -93,6 +94,80 @@ int main(int argc,const char* argv[])
     mat2.cudaMem_Device_To_Host();
     mat2.check_result();
     mat2.MatrixcudaDeviceReset();
+
+
+
+    MatrixMul::Matrix<float> mat3(M,K,N);
+    mat3.cudaMem_Host_To_Device();
+    dim3 blockSize3(32, 32);
+    dim3 gridSize3((N + blockSize3.x - 1) / blockSize3.x,(M + blockSize3.y - 1) / blockSize3.y);
+    float t_sum_v3 = 0;
+    for(int i = 0; i < ROLL_NUM; i++)
+    {
+        cudaEvent_t start,stop;
+        ErrorCheck(cudaEventCreate(&start),__FILE__,__LINE__);
+        ErrorCheck(cudaEventCreate(&stop),__FILE__,__LINE__);
+        ErrorCheck(cudaEventRecord(start),__FILE__,__LINE__);
+        cudaEventQuery(start);
+
+        mat3.multiply_cpu();
+
+        ErrorCheck(cudaEventRecord(stop),__FILE__,__LINE__);
+        ErrorCheck(cudaEventSynchronize(stop),__FILE__,__LINE__);
+        float elapse_time;
+        ErrorCheck(cudaEventElapsedTime(&elapse_time,start,stop),__FILE__,__LINE__);
+
+        if(i > 0)
+        {
+            t_sum_v3 += elapse_time;
+        }
+        ErrorCheck(cudaEventDestroy(start),__FILE__,__LINE__);
+        ErrorCheck(cudaEventDestroy(stop),__FILE__,__LINE__);
+        
+    }
+    const float t_ave_v3 = t_sum_v3 / ROLL_NUM;
+    printf("Average execution_cpu time of %d roll launches = %f (ms)\n",ROLL_NUM,t_ave_v3);
+
+    mat3.cudaMem_Device_To_Host();
+    mat3.check_result();
+    mat3.MatrixcudaDeviceReset();
+
+
+
+    MatrixMul::Matrix<float> mat4(M,K,N);
+    mat4.cudaMem_Host_To_Device();
+    dim3 blockSize4(32, 32);
+    dim3 gridSize4((N + blockSize4.x - 1) / blockSize4.x,(M + blockSize4.y - 1) / blockSize4.y);
+    float t_sum_v4 = 0;
+    for(int i = 0; i < ROLL_NUM; i++)
+    {
+        cudaEvent_t start,stop;
+        ErrorCheck(cudaEventCreate(&start),__FILE__,__LINE__);
+        ErrorCheck(cudaEventCreate(&stop),__FILE__,__LINE__);
+        ErrorCheck(cudaEventRecord(start),__FILE__,__LINE__);
+        cudaEventQuery(start);
+
+        mat4.multiply_cpu_omp();
+
+        ErrorCheck(cudaEventRecord(stop),__FILE__,__LINE__);
+        ErrorCheck(cudaEventSynchronize(stop),__FILE__,__LINE__);
+        float elapse_time = 0;
+        ErrorCheck(cudaEventElapsedTime(&elapse_time,start,stop),__FILE__,__LINE__);
+
+        if(i > 0)
+        {
+            t_sum_v4 += elapse_time;
+        }
+        ErrorCheck(cudaEventDestroy(start),__FILE__,__LINE__);
+        ErrorCheck(cudaEventDestroy(stop),__FILE__,__LINE__);
+        
+    }
+    const float t_ave_v4 = t_sum_v4 / ROLL_NUM;
+    printf("Average execution_cpu_omp time of %d roll launches = %f (ms)\n",ROLL_NUM,t_ave_v4);
+
+    mat4.cudaMem_Device_To_Host();
+    mat4.check_result();
+    mat4.MatrixcudaDeviceReset();
 
     return 0;
 

@@ -157,6 +157,16 @@ namespace MatrixMul
                 this->MatrixcudaDeviceSynchronize();
             }
 
+            void multiply_cpu()
+            {
+                MatrixAlgorith::MatrixMulOrigin(_data_A_Host, _data_B_Host, _data_C_Host, _M, _K, _N);
+            }
+
+            void multiply_cpu_omp()
+            {
+                MatrixAlgorith::MatrixMulOmp(_data_A_Host, _data_B_Host, _data_C_Host, _M, _K, _N);
+            }
+
             void cudaMem_Device_To_Host()
             {
                 CUDA_CHECK(cudaMemcpy(_data_C_Host, _data_C_Device, sizeof(T) * _C_size, cudaMemcpyDeviceToHost));

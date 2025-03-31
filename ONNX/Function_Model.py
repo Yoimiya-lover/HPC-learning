@@ -8,7 +8,8 @@ from onnx.helper import(
 from onnx.checker import check_model
 
 new_domain = 'custom' #自定义计算域
-opset_imports = [make_opsetid("",14),make_opsetid(new_domain,1)]#使用onnx14版本，自定义算子为1版本
+#使用onnx14版本，自定义算子为1版本
+opset_imports = [make_opsetid("",14),make_opsetid(new_domain,1)]
 
 node1 = make_node('MatMul',['X','A'],['XA'])
 node2 = make_node('Add',['XA','B'],['Y'])
